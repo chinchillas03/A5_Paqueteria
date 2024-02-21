@@ -7,6 +7,10 @@ package com.itson.a5_233233;
 import FactoryCaja.CajaGrandeFactory;
 import FactoryCaja.CajaMedianaFactory;
 import FactoryCaja.CajaPequenaFactory;
+import FactoryTransporte.AutoFactory;
+import FactoryTransporte.BicicletaFactory;
+import FactoryTransporte.DronFactory;
+import FactoryTransporte.MotoFactory;
 import java.util.Scanner;
 
 /**
@@ -27,9 +31,7 @@ public class A5_233233 {
         String tamañoPaquete = scanner.nextLine();
 
         System.out.println("Ingrese la distancia en kilómetros:");
-        double distanciaKm = scanner.nextDouble();
-      
-        System.out.println("Total: " + 45);
+        double distanciaKm = scanner.nextDouble();      
         
         if (tipoServicio.equalsIgnoreCase("es")) {
             s.setServicio(TipoServicio.ESTANDAR);
@@ -58,8 +60,39 @@ public class A5_233233 {
         
         pedido.setDistancia(distanciaKm);
         
-        double total = pedido.calcular();
-        System.out.println("Total: " + total);
+        calcularTransporte(pedido, s);
+        
+    }
+    
+    public static void calcularTransporte(Pedido pedido, Servicio servicio) {
+        double distancia = pedido.getDistancia();
+        Paquete paquete = pedido.getPaquete();
+        Transporte transporte = null;
+        
+        if ((paquete instanceof Sobre || paquete instanceof CajaPequena) && distancia <= 1 && servicio.getServicio() == TipoServicio.EXPRESS){
+            transporte = new DronFactory().crearTransporte();
+        } else if (servicio.getServicio() == TipoServicio.ESTANDAR) {
+            transporte = new BicicletaFactory().crearTransporte();
+        }
+        if ((paquete instanceof Sobre || paquete instanceof CajaPequena) && distancia > 1 && servicio.getServicio() == TipoServicio.ESTANDAR) { 
+            transporte = new BicicletaFactory().crearTransporte();
+        } else if (servicio.getServicio() == TipoServicio.EXPRESS) {
+            transporte = new MotoFactory().crearTransporte();
+        }
+        if (paquete instanceof CajaMediana && distancia <= 5 && servicio.getServicio() == TipoServicio.ESTANDAR) {
+            transporte = new BicicletaFactory().crearTransporte();
+        } else if (servicio.getServicio() == TipoServicio.EXPRESS || distancia > 5) {
+            transporte = new MotoFactory().crearTransporte();
+        }
+        
+        if (paquete instanceof CajaGrande) {
+            transporte = new AutoFactory().crearTransporte();
+        }
+        
+        pedido.setTransporte(transporte);
+        
+        System.out.println("El total del pedido es: " + pedido.calcularCosto());
+        System.out.println("El tiempo total en minutos del pedidos es de: " + pedido.calcularTiempo());
         
         
     }

@@ -30,36 +30,24 @@ public class Pedido {
         this.distancia = distancia;
     }
 
-    public double calcular(){
+    public double calcularCosto() {
         double costoAdicional = 0;
+
         if (this.distancia > 10) {
             costoAdicional += (distancia - 10) * 5.0;
         }
-        if (servicio.equals(TipoServicio.EXPRESS) && (paquete.equals(CajaPequena.class)) || paquete.equals(Sobre.class) && distancia <= 1) {
-            transporte = new DronFactory().crearTransporte();
-        } else if (servicio.equals(TipoServicio.ESTANDAR)) {
-            transporte = new BicicletaFactory().crearTransporte();
-        }
-        
-        if ((paquete.equals(CajaPequena.class)) || paquete.equals(Sobre.class) && distancia > 1 && servicio.equals(TipoServicio.ESTANDAR)) {
-            transporte = new BicicletaFactory().crearTransporte();
-        } else if (servicio.equals(TipoServicio.EXPRESS)) {
-            transporte = new MotoFactory().crearTransporte();
-        }
-        
-        if (servicio.equals(TipoServicio.ESTANDAR) && distancia <= 5 && (paquete.equals(CajaMediana.class) || paquete.equals(CajaPequena.class))) {
-            transporte = new BicicletaFactory().crearTransporte();
-        } else if (servicio.equals(TipoServicio.EXPRESS) || distancia > 5) {
-            transporte = new MotoFactory().crearTransporte();
-        }
-        
-        if (paquete.equals(CajaGrande.class)) {
-            transporte = new AutoFactory().crearTransporte();
-        }
-        
-        costoTotal = servicio.calcularCostoServicio()+ transporte.getCosto() + paquete.calcularCosto() + costoAdicional;
-        
+
+        costoTotal = servicio.calcularCostoServicio() + transporte.getCosto() + paquete.calcularCosto() + costoAdicional;
+
         return costoTotal;
+    }
+    
+    public double calcularTiempo(){
+        double tiempoHoras =  distancia / transporte.getVelocidad();
+        
+        double tiempoMinutos = tiempoHoras * 60;
+        
+        return tiempoMinutos;
     }
 
     public double getCostoTotal() {
